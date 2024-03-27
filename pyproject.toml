@@ -1,0 +1,12 @@
+[tool.autoflake]
+check_diff = true
+imports = ["app", "sqlalchemy"]
+
+[tool.isort]
+profile = "black"
+
+[tool.poetry]
+name = "BookingNest"
+version = "0.1.0"
+description = "Hotel booking service"
+authors = ["Dmitriy Sofronov <profos24@gmail.com>"]
