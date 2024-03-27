@@ -1,0 +1,14 @@
+__pycache__/
+.env
+.pytest_cache/
+.ruff_cache/
+
+
+venv/
+virt/
+
+test_main.http
+
+templates/
+!templates/hotels.html
+
