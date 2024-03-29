@@ -42,6 +42,6 @@ async def logout_user(response: Response):
     response.delete_cookie("booking_access_token")
 
 
-@router_user.post("/me")
+@router_user.get("/me")
 async def read_users_me(current_user: Users = Depends(get_current_user)):
     return current_user
