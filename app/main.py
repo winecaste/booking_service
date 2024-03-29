@@ -1,5 +1,4 @@
 import time
-from contextlib import asynccontextmanager
 from app.logger import logger
 
 from fastapi import FastAPI, Request
@@ -25,33 +24,13 @@ from app.prometheus.router import router as router_prometheus
 from app.importer.router import router as router_import
 from prometheus_fastapi_instrumentator import Instrumentator
 
-if settings.MODE == "TEST":
-    redis = aioredis.from_url(
-        f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}",
-        encoding="utf8",
-        decode_responses=True,
-    )
-    FastAPICache.init(RedisBackend(redis), prefix="cache")
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    redis = aioredis.from_url(
-        f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}",
-        encoding="utf8",
-        decode_responses=True,
-    )
-    FastAPICache.init(RedisBackend(redis), prefix="cache")
-    yield
-
-
 app = FastAPI(
-    lifespan=lifespan,
     title="BookingNest",
     description="Hotel booking service",
     version="0.1.0",
     root_path="/api",
 )
+
 if settings.MODE != "TEST":
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
@@ -93,7 +72,27 @@ app = VersionedFastAPI(
     version_format="{major}",
     prefix_format="/api/v{major}",
 )
+
 app.include_router(router_pages)
+
+if settings.MODE == "TEST":
+    redis = aioredis.from_url(
+        f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}",
+        encoding="utf8",
+        decode_responses=True,
+    )
+    FastAPICache.init(RedisBackend(redis), prefix="cache")
+
+
+@app.on_event("startup")
+async def startup():
+    redis = aioredis.from_url(
+        f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}",
+        encoding="utf8",
+        decode_responses=True,
+    )
+    FastAPICache.init(RedisBackend(redis), prefix="cache")
+
 
 instrumentator = Instrumentator(
     should_group_status_codes=False,
