@@ -3,7 +3,7 @@
 1. Скопируй репозиторий
 
 ```bash
-git clone https://github.com/yourusername/booking_service.git
+git clone https://github.com/winecaste/booking_service.git
 ```
 2. Перейди в папку ```cd booking_service```
 
